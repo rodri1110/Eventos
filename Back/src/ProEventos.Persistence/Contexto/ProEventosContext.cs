@@ -1,14 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using ProEventos.Domain;
 
-namespace ProEventos.Persistence
+namespace ProEventos.Persistence.Contexto
 {
     public class ProEventosContext : DbContext
     {
         public ProEventosContext(DbContextOptions<ProEventosContext> options) : base(options)
-        {
-            
+        {           
         }
+
         public DbSet<Evento> Eventos { get; set; }
         public DbSet<Lote> Lotes { get; set; }
         public DbSet<Palestrante> Palestrantes { get; set; }
@@ -19,6 +19,16 @@ namespace ProEventos.Persistence
         {
             modelBuilder.Entity<PalestranteEvento>()
             .HasKey(PalestranteEvento => new {PalestranteEvento.EventoId, PalestranteEvento.PalestranteId});
+        
+            modelBuilder.Entity<Evento>()
+            .HasMany(e => e.RedesSociais)
+            .WithOne(rs => rs.Evento)
+            .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Palestrante>()
+            .HasMany(p => p.RededesSociais)
+            .WithOne(rs => rs.Palestrante)
+            .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
