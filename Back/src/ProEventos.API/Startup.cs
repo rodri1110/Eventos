@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ using ProEventos.Persistence;
 using ProEventos.Persistence.Repository;
 using ProEventos.Persistence.Interface;
 using ProEventos.Persistence.Repository.Interface;
+using AutoMapper;
 
 namespace ProEventos.API
 {
@@ -35,11 +37,15 @@ namespace ProEventos.API
             .AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = 
             Newtonsoft.Json.ReferenceLoopHandling.Ignore
             );
-            services.AddCors();
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 
             services.AddScoped<IEventosService, EventosService>();
             services.AddScoped<IEventosRepository, EventosRepository>();
             services.AddScoped<IProEventosRepository, ProEventosRepository>();
+
+            services.AddCors();
 
             services.AddSwaggerGen(c =>
             {
