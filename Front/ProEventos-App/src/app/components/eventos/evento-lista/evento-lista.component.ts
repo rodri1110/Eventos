@@ -15,6 +15,8 @@ export class EventoListaComponent implements OnInit {
   public eventosFiltrados: Evento[]=[];
   public eventos: Evento[]=[];
   public mostrar = true;
+  public eventoId = 0;
+  public tema = "";
   private _filtroLista: string = '';
   modalRef?: BsModalRef;
   message?: string;
@@ -54,8 +56,7 @@ export class EventoListaComponent implements OnInit {
 
   public obterEventos(): void {
     this.eventoService.getEventos().subscribe({
-      next: (_eventos : Evento [])=> {
-
+      next: (_eventos: Evento [])=> {
         this.eventos = _eventos;
         this.eventosFiltrados = this.eventos;
       },
@@ -70,17 +71,36 @@ export class EventoListaComponent implements OnInit {
     });
   }
 
-  openModal(template: TemplateRef<any>): void {
+  openModal(event: any, template: TemplateRef<any>, eventoId: number, tema: string): void {
+    event.stopPropagation();
+    this.tema = tema;
+    this.eventoId = eventoId;
     this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
   }
 
   confirmar(): void {
-    this.toastr.success('Hello world!', 'Toastr fun!');
+    this.spinner.show();
     this.modalRef?.hide();
+    this.eventoService.deleteEvento(this.eventoId).subscribe({
+      next: (result: string) => {
+        console.log(result);
+        this.toastr.info('Evento deletado com sucesso!', 'Evento deletado!');
+        this.spinner.hide();
+        this.obterEventos();
+      },
+      error: (error: any) => {
+        console.error(error);
+        this.toastr.error('Erro ao carregar eventos!', 'Error!');
+        this.spinner.hide();
+      },
+      complete: () =>{
+        setTimeout(()=>
+        {this.spinner.hide()}, 200)
+      }
+    });
   }
 
   cancelar(): void {
-    this.toastr.error('Hello world!', 'Toastr fun!');
     this.modalRef?.hide();
   }
 

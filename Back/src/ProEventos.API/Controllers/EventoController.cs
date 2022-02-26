@@ -77,6 +77,7 @@ namespace ProEventos.API.Controllers
             {
                  var evento = await _service.AddEvento(model);
                  if(evento == null) return NoContent();
+                 
                  return Ok(evento);
             }
             catch (Exception ex)
@@ -107,7 +108,9 @@ namespace ProEventos.API.Controllers
         {
             try
             {
-                return await _service.DeleteEvento(id) ? Ok("Evento Deletado") : BadRequest("Erro ao deletar evento."); 
+                return await _service.DeleteEvento(id)
+                ? Ok(new {message = "Evento Deletado"}) 
+                : NoContent(); 
             }
             catch (Exception ex)
             {

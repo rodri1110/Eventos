@@ -76,7 +76,6 @@ namespace ProEventos.Application.Service
             try
             {
                 var evento = await _eventosRepository.GetEventoByIdAsync(eventoId, false);
-                if(evento == null) throw new Exception("Evento não encontrado.");
 
                 _proEventosRepository.Delete<Evento>(evento);
 

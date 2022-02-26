@@ -30,9 +30,11 @@
         </div>
         <div class="form-group col-md-4">
           <label>Data e Hora</label>
-          <input type="datetime-local" class="form-control"
+          <input
+          class="form-control" formControlName="dataEvento"
           [ngClass]="{'is-invalid': f.dataEvento.errors && f.dataEvento.touched}"
-          formControlName="dataEvento" placeholder="">
+          bsDatepicker [bsConfig]="bsConfig" type="text"
+          value="{{f['dataEvento'].value | DatePipes}}">
           <div *ngIf="f.dataEvento.errors?.required" class="invalide-feedback">
             Data e Hora são obrigatórias!
           </div>
@@ -51,6 +53,15 @@
             Quantidade máxima de pessoas é 500!
           </div>
         </div>
+          <div class="form-group col-md-4">
+            <label>imagemURL</label>
+            <input type="text" class="form-control"
+            [ngClass]="{'is-invalid': f.imagemURL.errors && f.imagemURL.touched}"
+            formControlName="imagemURL" placeholder="imagemURL">
+            <div *ngIf="f.imagemURL.errors?.required" class="invalid-feedback" >
+              Campo imagem é obrigatório!
+            </div>
+          </div>
         <div class="form-group col-md-4">
           <label>Telefone</label>
           <input type="text" class="form-control"
@@ -79,7 +90,7 @@
         <button class="btn btn-outline-secondary mr-auto border" (click)="this.limparCampos()">
           Cancelar Alteração
         </button>
-        <button class="btn btn-success" [disabled]="!this.formEventoDetalhe.valid">
+        <button class="btn btn-success" [disabled]="!formEventoDetalhe.valid" (click)="this.salvarAlteracao()">
           <!-- <span class="spinner-border spinner-border-sm mr-1"></span> -->
           Salvar Evento
         </button>
