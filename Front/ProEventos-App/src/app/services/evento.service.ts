@@ -5,7 +5,9 @@ import { Evento } from '../models/Evento';
 
 @Injectable(/*{
   providedIn: 'root'
-}*/)
+} Há duas formas de Injectable, esta que é feita no app.module
+que centraliza todos os Injectables ou deixar na própria classe
+como vem por padrão*/)
 export class EventoService {
 
   baseUrl = 'https://localhost:5001/api/evento';
@@ -22,7 +24,8 @@ constructor(private http: HttpClient) { }
 
   public getEventoById(EventoId: number) : Observable<Evento>{
     return this.http.get<Evento>(`${this.baseUrl}/${EventoId}`)
-    .pipe(take(1)); // Uma forma de realizar a chamada sem inscrever-se (subscribe)
+    .pipe(take(1)); // Uma forma de realizar a chamada sem
+    //inscrever-se (subscribe), pode ser utilizada em qualquer método.
   }
 
   public post(evento: Evento) : Observable<Evento>{

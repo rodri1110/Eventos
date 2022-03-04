@@ -10,5 +10,4 @@ export class DateTimeFormatPipe extends DatePipe implements PipeTransform {
   override transform(value: any, args?: string): any {
     return super.transform(value, Constants.DATE_TIME_FMT);
   }
-
 }

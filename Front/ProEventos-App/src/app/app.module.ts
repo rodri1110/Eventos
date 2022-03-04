@@ -33,6 +33,7 @@ import { RegistrationComponent } from './components/user/registration/registrati
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { defineLocale } from 'ngx-bootstrap/chronos';
 import { ptBrLocale } from 'ngx-bootstrap/locale';
+import { NgxCurrencyModule } from "ngx-currency";
 
 defineLocale('pt-br', ptBrLocale);
 
@@ -60,6 +61,7 @@ defineLocale('pt-br', ptBrLocale);
     BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
+    NgxCurrencyModule,
     CollapseModule.forRoot(),
     BsDropdownModule.forRoot(),
     BsDatepickerModule.forRoot(),
