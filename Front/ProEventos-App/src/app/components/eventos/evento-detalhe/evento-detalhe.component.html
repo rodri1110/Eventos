@@ -39,9 +39,9 @@
           <label>Data e Hora</label>
           <input
           class="form-control" formControlName="dataEvento"
-          [ngClass]="{'is-invalid': f.dataEvento.errors && f.dataEvento.touched}"
-          bsDatepicker [bsConfig]="bsConfig" type="text"
-          value="{{f['dataEvento'].value | DatePipes}}">
+          [ngClass]="{'is-invalid': f['dataEvento'].errors && f['dataEvento'].touched}"
+          type="datetime-local"
+          value="{{f.dataEvento.value }}">
           <div *ngIf="f.dataEvento.errors?.required" class="invalide-feedback">
             Data e Hora são obrigatórias!
           </div>
