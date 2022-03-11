@@ -29,11 +29,11 @@ namespace ProEventos.API.Controllers
             try
             {
                 var eventos = await _service.GetAllEventosAsync(true);
-                if(eventos == null) return NoContent();
+                if (eventos == null) return NoContent();
                 return Ok(eventos);
             }
             catch (Exception ex)
-            {                
+            {
                 return this.StatusCode(StatusCodes.Status500InternalServerError,
                 $"Erro ao tentar recuperar eventos. Erro: {ex.Message}");
             }
@@ -44,9 +44,9 @@ namespace ProEventos.API.Controllers
         {
             try
             {
-                 var evento = await _service.GetEventoByIdAsync(id, true);
-                 if(evento == null) return NoContent();
-                 return Ok(evento);
+                var evento = await _service.GetEventoByIdAsync(id, true);
+                if (evento == null) return NoContent();
+                return Ok(evento);
             }
             catch (Exception ex)
             {
@@ -60,9 +60,9 @@ namespace ProEventos.API.Controllers
         {
             try
             {
-                 var evento = await _service.GetAllEventosByTemaAsync(tema, true);
-                 if(evento == null) return NoContent();
-                 return Ok(evento);
+                var evento = await _service.GetAllEventosByTemaAsync(tema, true);
+                if (evento == null) return NoContent();
+                return Ok(evento);
             }
             catch (Exception ex)
             {
@@ -76,18 +76,19 @@ namespace ProEventos.API.Controllers
         {
             try
             {
-                 var evento = await _service.GetEventoByIdAsync(eventoId, true);
-                 if(evento == null) return NoContent();
-                 
-                 var file = Request.Form.Files[0];
-                 if(file.Length > 0){
-                     DeleteImage(evento.ImagemURL);
-                     evento.ImagemURL = await SaveImage(file);
-                 }
+                var evento = await _service.GetEventoByIdAsync(eventoId, true);
+                if (evento == null) return NoContent();
 
-                 var eventoRetorno = await _service.UpDateEvento(eventoId ,evento);
-                 
-                 return Ok(eventoRetorno);
+                var file = Request.Form.Files[0];
+                if (file.Length > 0)
+                {
+                    DeleteImage(evento.ImagemURL);
+                    evento.ImagemURL = await SaveImage(file);
+                }
+
+                var eventoRetorno = await _service.UpDateEvento(eventoId, evento);
+
+                return Ok(eventoRetorno);
             }
             catch (Exception ex)
             {
@@ -101,10 +102,10 @@ namespace ProEventos.API.Controllers
         {
             try
             {
-                 var evento = await _service.AddEvento(model);
-                 if(evento == null) return NoContent();
-                 
-                 return Ok(evento);
+                var evento = await _service.AddEvento(model);
+                if (evento == null) return NoContent();
+
+                return Ok(evento);
             }
             catch (Exception ex)
             {
@@ -118,12 +119,12 @@ namespace ProEventos.API.Controllers
         {
             try
             {
-                 var evento = await _service.UpDateEvento(id, model);
-                 if(evento == null)return NoContent();
-                 return Ok(evento);
+                var evento = await _service.UpDateEvento(id, model);
+                if (evento == null) return NoContent();
+                return Ok(evento);
             }
             catch (Exception ex)
-            {                
+            {
                 return StatusCode(StatusCodes.Status500InternalServerError,
                 $"Erro ao atualizar Evento. Erro: {ex.Message}");
             }
@@ -134,9 +135,18 @@ namespace ProEventos.API.Controllers
         {
             try
             {
-                return await _service.DeleteEvento(id)
-                ? Ok(new {message = "Evento Deletado"}) 
-                : NoContent(); 
+                var evento = await _service.GetEventoByIdAsync(id, true);
+                if (evento == null) return NoContent();
+
+                if (await _service.DeleteEvento(id))
+                {
+                    DeleteImage(evento.ImagemURL);
+                    return Ok(new { message = "Evento Deletado" });
+                }
+                else
+                {
+                    return NoContent();
+                }
             }
             catch (Exception ex)
             {
@@ -146,13 +156,14 @@ namespace ProEventos.API.Controllers
         }
 
         [NonAction]
-        public async Task<string> SaveImage(IFormFile imageFile){
-            
+        public async Task<string> SaveImage(IFormFile imageFile)
+        {
+
             string imageName = new String(Path.GetFileNameWithoutExtension(imageFile.FileName)
                 .Take(15).ToArray()).Replace(' ', '-');
 
             imageName = $"{imageName}{DateTime.UtcNow.ToString("yymmssfff")}{Path.GetExtension(imageFile.FileName)}";
-            
+
             var imagePath = Path.Combine(_hostEnviroment.ContentRootPath, @"Resources/images", imageName);
 
             using (var fileStream = new FileStream(imagePath, FileMode.Create))
@@ -163,9 +174,11 @@ namespace ProEventos.API.Controllers
         }
 
         [NonAction]
-        public void DeleteImage(string imageName){
+        public void DeleteImage(string imageName)
+        {
             var imagePath = Path.Combine(_hostEnviroment.ContentRootPath, @"Resources/images", imageName);
-            if(System.IO.File.Exists(imagePath)){
+            if (System.IO.File.Exists(imagePath))
+            {
                 System.IO.File.Delete(imagePath);
             }
         }

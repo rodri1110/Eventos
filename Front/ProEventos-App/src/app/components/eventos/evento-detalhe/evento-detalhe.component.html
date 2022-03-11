@@ -19,6 +19,7 @@
                 [ngClass]="{ 'is-invalid': f.tema.errors && f.tema.touched }"
                 formControlName="tema"
                 placeholder="Insira o Tema"
+                [(ngModel)]="evento.tema"
               />
               <div *ngIf="f.tema.errors?.required" class="invalid-feedback">
                 Tema é obrigatório!
@@ -42,7 +43,8 @@
                 }"
                 type="datetime-local"
                 value="{{ f.dataEvento.value }}"
-              />
+                [(ngModel)]="evento.dataEvento"
+                />
               <div
                 *ngIf="f.dataEvento.errors?.required"
                 class="invalide-feedback"
@@ -60,7 +62,8 @@
                 [ngClass]="{ 'is-invalid': f.local.errors && f.local.touched }"
                 formControlName="local"
                 placeholder="Insira um local"
-              />
+                [(ngModel)]="evento.local"
+                />
               <div *ngIf="f.local.errors?.required" class="invalid-feedback">
                 Local é obrigatório!
               </div>
@@ -74,7 +77,8 @@
                   'is-invalid': f.qtdPessoas.errors && f.qtdPessoas.touched
                 }"
                 formControlName="qtdPessoas"
-              />
+                [(ngModel)]="evento.qtdPessoas"
+                />
               <div
                 *ngIf="f.qtdPessoas.errors?.required"
                 class="invalid-feedback"
@@ -87,7 +91,7 @@
             </div>
           </div>
           <div class="form-row d-md-flex">
-            <div class="form-group col-md-5 pe-md-3">
+            <div class="form-group col-md-8 pe-md-3">
               <label>e-mail</label>
               <input
                 type="text"
@@ -95,7 +99,8 @@
                 [ngClass]="{ 'is-invalid': f.email.errors && f.email.touched }"
                 formControlName="email"
                 placeholder="e-mail"
-              />
+                [(ngModel)]="evento.email"
+                />
               <div *ngIf="f.email.errors?.required" class="invalid-feedback">
                 e-mail é obrigatório!
               </div>
@@ -104,7 +109,7 @@
               </div>
             </div>
 
-            <div class="form-group col-md-3 pe-md-3">
+            <div class="form-group col-md-4">
               <label>Telefone</label>
               <input
                 type="text"
@@ -114,27 +119,10 @@
                 }"
                 formControlName="telefone"
                 placeholder="(99) 90000-0000"
-              />
+                [(ngModel)]="evento.telefone"
+                />
               <div *ngIf="f.telefone.errors?.required" class="invalid-feedback">
                 Telefone é obrigatório!
-              </div>
-            </div>
-            <div class="form-group col-md-4">
-              <label>imagemURL</label>
-              <input
-                type="text"
-                class="form-control"
-                [ngClass]="{
-                  'is-invalid': f.imagemURL.errors && f.imagemURL.touched
-                }"
-                formControlName="imagemURL"
-                placeholder="imagemURL"
-              />
-              <div
-                *ngIf="f.imagemURL.errors?.required"
-                class="invalid-feedback"
-              >
-                Campo imagem é obrigatório!
               </div>
             </div>
           </div>
@@ -305,10 +293,11 @@
       </div>
       <div class="card profile-card-2">
         <div class="card-img-block">
+          <p>{{ evento.imagemURL | json}}</p>
           <img
             class="image"
             class="img-fluid"
-            [src]="imagemURL"
+            [src]="exibeImagemEvento(evento.imagemURL)"
             (click)="file.click()"
             alt="Card image cap"
             tooltip="Upload de Nova Imagem"

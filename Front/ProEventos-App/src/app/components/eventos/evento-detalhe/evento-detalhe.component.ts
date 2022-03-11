@@ -16,6 +16,7 @@ import {
 } from '@angular/forms';
 import { Lote } from '@app/models/Lotes';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { environment } from '@environments/environment';
 
 @Component({
   selector: 'app-evento-detalhe',
@@ -60,6 +61,15 @@ export class EventoDetalheComponent implements OnInit {
     return false;
   }
 
+  exibeImagemEvento(imagem: string): string {
+
+    return imagem !== '' ?
+    `${environment.apiURL}resources/images/${imagem}`
+    :
+    'assets/imagens/upLoad.png';
+
+  }
+
   public carregarEvento(): void {
     this.eventoId = +this.activatedRoute.snapshot.paramMap.get('id');
     if (this.eventoId !== null && this.eventoId !== 0) {
@@ -71,7 +81,10 @@ export class EventoDetalheComponent implements OnInit {
         next: (eventoRetorno: Evento) => {
           this.evento = { ...eventoRetorno };
           this.form.patchValue(this.evento);
-          this.evento.lotes.forEach(
+          if(this.imagemURL !== null){
+            this.imagemURL = environment.apiURL +'resources/images/'+ this.evento.imagemURL;
+          }
+            this.evento.lotes.forEach(
             (
               lote // esta chamada substitui a chamada do carregarLotes()
             ) => this.lotes.push(this.criarLotes(lote))
@@ -148,7 +161,7 @@ export class EventoDetalheComponent implements OnInit {
       local: ['', Validators.required],
       dataEvento: ['', Validators.required],
       qtdPessoas: ['', [Validators.required, Validators.max(500)]],
-      imagemURL: ['', Validators.required],
+      imagemURL: [''],
       telefone: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       lotes: this.fb.array([]),
@@ -237,7 +250,7 @@ export class EventoDetalheComponent implements OnInit {
         },
         error: (error: any) => {
           console.error(error);
-          this.toastr.error('Erro ao carregar eventos!', 'Error!');
+          this.toastr.error('Erro ao Deletar evento!', 'Error!');
         },
       })
       .add(() => this.spinner.hide());
@@ -258,5 +271,20 @@ export class EventoDetalheComponent implements OnInit {
     reader.onload = (event: any) => this.imagemURL = event.target.result;
 
     reader.readAsDataURL(this.file[0]);
+    this.uploadImage();
+  }
+
+  uploadImage(): void {
+    this.spinner.show();
+
+    this.eventoService.postUpLoad(this.eventoId, this.file).subscribe({
+      next: () => {
+        this.carregarEvento(); // Apresenta o novo nome do arquivo de imagem
+        this.toastr.success('Imagem atualizada com sucesso!', 'Sucesso');
+      },
+      error: (error: any) => {
+        this.toastr.error('Erro ao carregar imagem!', 'Erro');
+      }
+    }).add(() => this.spinner.hide())
   }
 }
