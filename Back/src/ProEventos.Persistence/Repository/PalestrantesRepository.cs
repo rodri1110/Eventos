@@ -19,7 +19,7 @@ namespace ProEventos.Persistence.Repository
         public async Task<Palestrante[]> GetAllPalestrantesAsync(bool includeEventos = false)
         {
             IQueryable<Palestrante> query = _context.Palestrantes
-                .Include(palestrante => palestrante.RededesSociais);
+                .Include(palestrante => palestrante.RedesSociais);
             
             if(includeEventos)
             {
@@ -28,7 +28,7 @@ namespace ProEventos.Persistence.Repository
                     .ThenInclude(palestranteEvento => palestranteEvento.Evento);
             }
 
-            query = query.OrderBy(palestrante => palestrante.Nome);
+            query = query.OrderBy(palestrante => palestrante.User.PrimeiroNome);
 
             return await query.ToArrayAsync();
         }
@@ -36,7 +36,7 @@ namespace ProEventos.Persistence.Repository
         public async Task<List<Palestrante>> GetAllPalestrantesByNomeAsync(string nome, bool includeEventos = false)
         {
             IQueryable<Palestrante> query = _context.Palestrantes
-                .Include(palestrante => palestrante.RededesSociais);
+                .Include(palestrante => palestrante.RedesSociais);
             
             if(includeEventos)
             {
@@ -46,8 +46,8 @@ namespace ProEventos.Persistence.Repository
             }
 
             query = query            
-            .OrderBy(palestrante => palestrante.Nome)
-            .Where(palestrante => palestrante.Nome.ToLower()
+            .OrderBy(palestrante => palestrante.User.PrimeiroNome)
+            .Where(palestrante => palestrante.User.PrimeiroNome.ToLower()
             .Contains(nome.ToLower()));
 
             return await query.ToListAsync();
@@ -56,7 +56,7 @@ namespace ProEventos.Persistence.Repository
         public async Task<Palestrante> GetPalestranteByIdAsync(int palestranteId, bool includeEventos = false)
         {
             IQueryable<Palestrante> query = _context.Palestrantes
-                .Include(palestrante => palestrante.RededesSociais);
+                .Include(palestrante => palestrante.RedesSociais);
 
             if(includeEventos)
             {
