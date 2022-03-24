@@ -32,7 +32,7 @@ namespace ProEventos.Application.Service
             try
             {
                 var user = await _userManager.Users
-                .SingleOrDefaultAsync(user => user.UserName == userUpDateDTO.UserName);
+                .SingleOrDefaultAsync(user => user.UserName == userUpDateDTO.UserName.ToLower());
 
                 return await _signInManager.CheckPasswordSignInAsync(user, password, false);
                 // Se alterarmos para true o usuário é bloqueado após tentativa errada.
@@ -58,7 +58,7 @@ namespace ProEventos.Application.Service
             }
             catch (Exception ex)
             {
-                 throw new Exception($"Erro ao criar conta. Erro: {ex.Message}");
+                 throw new Exception($"Erro ao criar usuário. Erro: {ex.Message}");
             }
         }
 

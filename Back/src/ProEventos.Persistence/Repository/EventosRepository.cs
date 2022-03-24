@@ -17,7 +17,7 @@ namespace ProEventos.Persistence.Repository
             _context = context;
         }
 
-        public async Task<Evento[]> GetAllEventosAsync(bool includePalestrantes = false)
+        public async Task<Evento[]> GetAllEventosAsync(int userId, bool includePalestrantes = false)
         {
             IQueryable<Evento> query = _context.Eventos
             .Include(evento => evento.Lotes)
@@ -30,11 +30,14 @@ namespace ProEventos.Persistence.Repository
                 .ThenInclude(palestranteEvento => palestranteEvento.Palestrante);
             }
 
-            query = query.OrderBy(evento => evento.EventoId);
+            query = query
+            .AsNoTracking()
+            .Where(evento => evento.UserId == userId)
+            .OrderBy(evento => evento.EventoId);
             return await query.ToArrayAsync();
         }
 
-        public async Task<Evento> GetEventoByIdAsync(int eventoId, bool includePalestrantes = false)
+        public async Task<Evento> GetEventoByIdAsync(int userId, int eventoId, bool includePalestrantes = false)
         {
             IQueryable<Evento> query = _context.Eventos.AsNoTracking()
                 .Include(evento => evento.Lotes)
@@ -47,12 +50,14 @@ namespace ProEventos.Persistence.Repository
                     .ThenInclude(palestranteEvento => palestranteEvento.Palestrante);
             }
 
-            query = query.Where(evento => evento.EventoId == eventoId);
+            query = query.AsNoTracking()
+                        .Where(evento => evento.EventoId == eventoId
+                         &&  evento.UserId == userId);
 
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<List<Evento>> GetAllEventosByTemaAsync(string tema, bool includePalestrantes = false)
+        public async Task<List<Evento>> GetAllEventosByTemaAsync(int userId, string tema, bool includePalestrantes = false)
         {
             IQueryable<Evento> query = _context.Eventos
                     .Include(evento => evento.Lotes)
@@ -67,7 +72,8 @@ namespace ProEventos.Persistence.Repository
 
             query = query   
                     .OrderBy(evento => evento.Tema)
-                    .Where(evento => evento.Tema.ToLower().Contains(tema.ToLower()));
+                    .Where(evento => evento.Tema.ToLower().Contains(tema.ToLower()) 
+                        && evento.UserId == userId);
             
             return await query.ToListAsync();        
         }        
