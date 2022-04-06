@@ -41,14 +41,19 @@ namespace ProEventos.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("Register")]
-        public async Task<IActionResult> ResgisterUser(UserDTO userDTO){
+        public async Task<IActionResult> RegisterUser(UserDTO userDTO){
             try
             {
                 if(await _accountService.UserExists(userDTO.UserName))
                 return BadRequest("Nome de usuário já cadastrado");
 
                 var user = await _accountService.CreateAccountAsync(userDTO);
-                if(user != null) return  Ok(user);
+                if(user != null) return Ok(new
+                {
+                    userName = user.UserName,
+                    PrimeiroNome = user.PrimeiroNome,
+                    token = _tokenService.CreateToken(user).Result
+                });
 
                 return BadRequest("Usuário não criado, tente novamente mais tarde!");
             }
@@ -88,13 +93,24 @@ namespace ProEventos.API.Controllers
         public async Task<IActionResult> UpdateUser(UserUpdateDTO userUpdateDTO){
             try
             {
+                if(userUpdateDTO.UserName != User.GetUserName()) 
+                return Unauthorized("Usuário inválido!");
+
                 var user = await _accountService.GetUserByUserNameAsync(User.GetUserName());
                 if(user == null) return Unauthorized("Usuário inválido.");
 
                 var userReturn = await _accountService.UpdateAccount(userUpdateDTO);
                 if(userReturn == null) return  NoContent();
 
-                return Ok(userReturn);
+                return Ok
+                (
+                    new 
+                    {
+                        userName = userReturn.UserName,
+                        PrimeiroNome = userReturn.PrimeiroNome,
+                        token = _tokenService.CreateToken(userReturn).Result
+                    }
+                );
             }
             catch (Exception ex)
             {

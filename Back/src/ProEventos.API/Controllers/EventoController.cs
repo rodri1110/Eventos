@@ -5,7 +5,6 @@ using ProEventos.Application.Interface;
 using Microsoft.AspNetCore.Http;
 using ProEventos.Application.DTOs;
 using System.IO;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using System.Linq;
 using ProEventos.API.Extensions;
@@ -46,7 +45,7 @@ namespace ProEventos.API.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{eventoId}")]
         public async Task<IActionResult> GetById(int eventoId)
         {
             try
@@ -138,14 +137,14 @@ namespace ProEventos.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int eventoId)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var evento = await _service.GetEventoByIdAsync(User.GetUserId(), eventoId, true);
+                var evento = await _service.GetEventoByIdAsync(User.GetUserId(), id, true);
                 if (evento == null) return NoContent();
 
-                if (await _service.DeleteEvento(User.GetUserId(), eventoId))
+                if (await _service.DeleteEvento(User.GetUserId(), id))
                 {
                     DeleteImage(evento.ImagemURL);
                     return Ok(new { message = "Evento Deletado" });

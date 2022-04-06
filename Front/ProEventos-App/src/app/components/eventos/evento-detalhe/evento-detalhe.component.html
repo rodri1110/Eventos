@@ -42,7 +42,7 @@
                     f['dataEvento'].errors && f['dataEvento'].touched
                 }"
                 type="datetime-local"
-                value="{{ f.dataEvento.value }}"
+                value="{{ f.dataEvento }}"
                 [(ngModel)]="evento.dataEvento"
                 />
               <div
@@ -293,7 +293,6 @@
       </div>
       <div class="card profile-card-2">
         <div class="card-img-block">
-          <p>{{ evento.imagemURL | json}}</p>
           <img
             class="image"
             class="img-fluid"

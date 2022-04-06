@@ -32,13 +32,15 @@
     </thead>
     <tbody *ngIf="eventos && eventos.length">
       <tr *ngFor="let evento of eventosFiltrados" (click)="exibirEvento(evento.eventoId)" style="cursor: pointer;">
-        <td class="d-none d-md-table-cell"><img [collapse]="!mostrar" [isAnimated]="true" src="./assets/imagens/novo.jpg" alt="{{evento.imagemURL}}" style="width: 100px;"></td>
+        <td class="d-none d-md-table-cell"><img [collapse]="!mostrar" [isAnimated]="true" [src]="mostraImagem(evento.imagemURL)" alt="{{evento.imagemURL}}" style="width: 90px;"></td>
         <td>{{evento.eventoId}}</td>
         <td class="d-none d-md-table-cell">{{evento.tema}}</td>
         <td>{{evento.local}}</td>
         <td>{{evento.dataEvento | DatePipes }}</td>
         <td class="d-none d-md-table-cell">{{evento.qtdPessoas}}</td>
-        <td class="d-none d-md-table-cell">{{evento.lotes}}</td>
+        <td class="d-none d-md-table-cell">
+          <p *ngFor="let lote of evento.lotes">{{lote.nome}}</p>
+        </td>
         <td>
           <button class="btn btn-danger btn-lg" tooltip="Excluir" (click)="openModal($event, template, evento.eventoId, evento.tema)">
           <i class="fa fa-trash"></i></button>
@@ -54,8 +56,6 @@
     </tfoot>
   </table>
 </div>
-
-{{eventos | json}}
 
 <ng-template #template>
   <div class="modal-body text-center">

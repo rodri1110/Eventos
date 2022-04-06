@@ -1,5 +1,6 @@
 import { Component, OnInit, TemplateRef } from '@angular/core';
 import { Router } from '@angular/router';
+import { environment } from '@environments/environment';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
@@ -20,6 +21,7 @@ export class EventoListaComponent implements OnInit {
   private _filtroLista: string = '';
   modalRef?: BsModalRef;
   message?: string;
+  imagemURL = 'assets/imagens/upLoad.png';
 
   constructor(
     private eventoService: EventoService,
@@ -54,6 +56,12 @@ export class EventoListaComponent implements OnInit {
     this.obterEventos();
   }
 
+  public mostraImagem(imagemURL: string): string {
+    return (imagemURL !== '')
+      ? `${environment.baseApiURL}resources/images/${imagemURL}`
+      : this.imagemURL;
+  }
+
   public obterEventos(): void {
     this.eventoService.getEventos().subscribe({
       next: (_eventos: Evento [])=> {
@@ -83,14 +91,12 @@ export class EventoListaComponent implements OnInit {
     this.modalRef?.hide();
     this.eventoService.deleteEvento(this.eventoId).subscribe({
       next: (result: string) => {
-        console.log(result);
-        this.toastr.info('Evento deletado com sucesso!', 'Evento deletado!');
-        this.spinner.hide();
+        this.toastr.info('Evento deletado com sucesso!', 'Evento deletado');
         this.obterEventos();
       },
       error: (error: any) => {
         console.error(error);
-        this.toastr.error('Erro ao carregar eventos!', 'Error!');
+        this.toastr.error('Erro ao deletar evento!', 'Error!');
         this.spinner.hide();
       },
       complete: () =>{

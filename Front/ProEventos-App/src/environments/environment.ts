@@ -4,9 +4,9 @@
 
 export const environment = {
   production: false,
-  baseUrl: 'https://localhost:5001/api/evento',
-  baseLoteUrl: 'https://localhost:5001/api/lote',
-  apiURL: 'https://localhost:5001/'
+  eventoBaseUrl: 'https://localhost:5001/api/Evento',
+  loteBaseUrl: 'https://localhost:5001/api/lote',
+  baseApiURL: 'https://localhost:5001/'
 };
 
 /*

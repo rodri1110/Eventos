@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, take } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -11,32 +11,34 @@ que centraliza todos os Injectables ou deixar na própria classe
 como vem por padrão*/)
 export class EventoService {
 
+ tokenHeader = new HttpHeaders({'Authorization': `Bearer ${JSON.parse(localStorage.getItem('user')).token}`});
+
 constructor(private http: HttpClient) { }
 
   public getEventos() : Observable<Evento[]>{
-    return this.http.get<Evento[]>(environment.baseUrl);
+    return this.http.get<Evento[]>(environment.eventoBaseUrl);
   }
 
   public getEventosByTema(tema: string) : Observable<Evento[]>{
-    return this.http.get<Evento[]>(`${environment.baseUrl}/${tema}/tema`);
+    return this.http.get<Evento[]>(`${environment.eventoBaseUrl}/${tema}/tema`);
   }
 
   public getEventoById(EventoId: number) : Observable<Evento>{
-    return this.http.get<Evento>(`${environment.baseUrl}/${EventoId}`)
-    .pipe(take(1)); // Uma forma de realizar a chamada sem
+    return this.http.get<Evento>(`${environment.eventoBaseUrl}/${EventoId}`);
+    //.pipe(take(1)); // Uma forma de realizar a chamada sem
     //inscrever-se (subscribe), pode ser utilizada em qualquer método.
   }
 
   public post(evento: Evento) : Observable<Evento>{
-    return this.http.post<Evento>(environment.baseUrl, evento);
+    return this.http.post<Evento>(environment.eventoBaseUrl, evento);
   }
 
   public put(evento: Evento) : Observable<Evento>{
-    return this.http.put<Evento>(`${environment.baseUrl}/${evento.eventoId}`, evento);
+    return this.http.put<Evento>(`${environment.eventoBaseUrl}/${evento.eventoId}`, evento);
   }
 
   public deleteEvento(eventoId: number) : Observable<any>{
-    return this.http.delete(`${environment.baseUrl}/${eventoId}`);
+    return this.http.delete(`${environment.eventoBaseUrl}/${eventoId}`);
   }
 
   public postUpLoad(eventoId: number, file: File): Observable<Evento>{
@@ -44,6 +46,6 @@ constructor(private http: HttpClient) { }
     const formData = new FormData();
     formData.append('file', fileToUpload);
 
-    return this.http.post<Evento>(`${environment.baseUrl}/upload-image/${eventoId}`, formData).pipe(take(1));
+    return this.http.post<Evento>(`${environment.eventoBaseUrl}/upload-image/${eventoId}`, formData).pipe(take(1));
   }
 }

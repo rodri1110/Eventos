@@ -17,6 +17,7 @@ import {
 import { Lote } from '@app/models/Lotes';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { environment } from '@environments/environment';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-evento-detalhe',
@@ -31,7 +32,7 @@ export class EventoDetalheComponent implements OnInit {
   statusSalvar: string = 'post';
   modalRef?: BsModalRef;
   loteAtual: any = { id: 0, nome: '', indice: 0 };
-  imagemURL: string = 'assets/imagens/upLoad.png';
+  imagemURL = 'assets/imagens/upLoad.png';
   file: File;
 
   constructor(
@@ -61,28 +62,26 @@ export class EventoDetalheComponent implements OnInit {
     return false;
   }
 
-  exibeImagemEvento(imagem: string): string {
-
-    return imagem !== '' ?
-    `${environment.apiURL}resources/images/${imagem}`
-    :
-    'assets/imagens/upLoad.png';
+  public exibeImagemEvento(imagem: string): string {
+    return imagem === '' ? this.imagemURL : imagem;
 
   }
 
   public carregarEvento(): void {
     this.eventoId = +this.activatedRoute.snapshot.paramMap.get('id');
+
     if (this.eventoId !== null && this.eventoId !== 0) {
       this.spinner.show();
 
       this.statusSalvar = 'put';
 
       this.eventoService.getEventoById(this.eventoId).subscribe({
-        next: (eventoRetorno: Evento) => {
+          next: (eventoRetorno: Evento) => {
+
           this.evento = { ...eventoRetorno };
           this.form.patchValue(this.evento);
-          if(this.imagemURL !== null){
-            this.imagemURL = environment.apiURL +'resources/images/'+ this.evento.imagemURL;
+          if(this.evento.imagemURL !== ''){
+            this.evento.imagemURL = environment.baseApiURL +'resources/images/'+ this.evento.imagemURL;
           }
             this.evento.lotes.forEach(
             (
@@ -91,9 +90,9 @@ export class EventoDetalheComponent implements OnInit {
           );
           //this.carregarLotes()
         },
-        error: (error: any) => {
-          this.toastr.error('Erro ao tentar carregar evento', 'Erro'),
-            console.error(error);
+        error: (error: HttpErrorResponse) => {
+          this.toastr.error(error.error, 'Erro'),
+            console.error(error.error);
         },
         complete: () => {
           this.spinner.hide(),
@@ -266,9 +265,9 @@ export class EventoDetalheComponent implements OnInit {
 
   onFileChange(ev: any): void {
     const reader = new FileReader();
-    this.file = ev.target.files;
-
     reader.onload = (event: any) => this.imagemURL = event.target.result;
+
+    this.file = ev.target.files;
 
     reader.readAsDataURL(this.file[0]);
     this.uploadImage();
@@ -284,6 +283,7 @@ export class EventoDetalheComponent implements OnInit {
       },
       error: (error: any) => {
         this.toastr.error('Erro ao carregar imagem!', 'Erro');
+        console.log(error)
       }
     }).add(() => this.spinner.hide())
   }
