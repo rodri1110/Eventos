@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ProEventos.Application.DTOs;
+using ProEventos.Persistence.Models;
 
 namespace ProEventos.Application.Interface
 {
@@ -9,9 +10,7 @@ namespace ProEventos.Application.Interface
         Task<EventoDTO> AddEvento(int userId, EventoDTO model);
         Task<EventoDTO> UpDateEvento(int userId, int eventoId, EventoDTO model);
         Task<bool> DeleteEvento(int userId, int eventoId);
-        
-        Task<List<EventoDTO>> GetAllEventosByTemaAsync(int userId, string tema, bool includePalestrantes = false);
-        Task<EventoDTO[]> GetAllEventosAsync(int userId, bool includePalestrantes = false);       
+        Task<PageList<EventoDTO>> GetAllEventosAsync(int userId, PageParams pageParams, bool includePalestrantes = false);       
         Task<EventoDTO> GetEventoByIdAsync(int userId, int Eventoid, bool includePalestrantes = false);
     }
 }

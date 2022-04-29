@@ -6,6 +6,7 @@ using ProEventos.Application.DTOs;
 using ProEventos.Application.Interface;
 using ProEventos.Domain;
 using ProEventos.Persistence.Interface;
+using ProEventos.Persistence.Models;
 using ProEventos.Persistence.Repository.Interface;
 
 namespace ProEventos.Application.Service
@@ -89,34 +90,21 @@ namespace ProEventos.Application.Service
             }
         }
 
-        public async Task<EventoDTO[]> GetAllEventosAsync(int userId, bool includePalestrantes = false)
+        public async Task<PageList<EventoDTO>> GetAllEventosAsync(int userId, PageParams pageParams, bool includePalestrantes = false)
         {
             try
             {
-                var eventos = await _eventosRepository.GetAllEventosAsync(userId, includePalestrantes);
+                var eventos = await _eventosRepository.GetAllEventosAsync(userId, pageParams, includePalestrantes);
                 if(eventos == null) throw new Exception ("Não há Eventos cadastrados.");
 
-                var resultados = _mapper.Map<EventoDTO[]>(eventos);
-                
+                var resultados = _mapper.Map<PageList<EventoDTO>>(eventos);
+
+                resultados.CurrentPage = eventos.CurrentPage;
+                resultados.TotalPages = eventos.TotalPages;
+                resultados.PageSize = eventos.PageSize;
+                resultados.TotalCount = eventos.TotalCount;
+
                 return resultados;
-            }
-            catch (Exception ex)
-            {                
-                throw new Exception (ex.Message);
-            }
-        }
-
-        public async Task<List<EventoDTO>> GetAllEventosByTemaAsync(int userId, string tema, bool includePalestrantes = false)
-        {
-            try
-            {
-                 var evento = await _eventosRepository.GetAllEventosByTemaAsync(userId, tema, includePalestrantes);
-
-                 if(evento == null) throw new Exception("Tema não encontrado.");
-
-                 var resultados = _mapper.Map<List<EventoDTO>>(evento);
-
-                 return resultados;
             }
             catch (Exception ex)
             {                

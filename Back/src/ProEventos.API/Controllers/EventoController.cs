@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using System.Linq;
 using ProEventos.API.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using ProEventos.Persistence.Models;
 
 namespace ProEventos.API.Controllers
 {
@@ -30,12 +31,15 @@ namespace ProEventos.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetEventos()
+        public async Task<IActionResult> GetEventos([FromQuery]PageParams pageParams)
         {
             try
             {
-                var eventos = await _service.GetAllEventosAsync(User.GetUserId(), true);
+                var eventos = await _service.GetAllEventosAsync(User.GetUserId(), pageParams, true);
                 if (eventos == null) return NoContent();
+
+                Response.AddPagination(eventos.CurrentPage, eventos.TotalCount,eventos.PageSize, eventos.TotalPages);
+
                 return Ok(eventos);
             }
             catch (Exception ex)
@@ -51,22 +55,6 @@ namespace ProEventos.API.Controllers
             try
             {
                 var evento = await _service.GetEventoByIdAsync(User.GetUserId(), eventoId, true);
-                if (evento == null) return NoContent();
-                return Ok(evento);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                $"Erro ao retornar Evento. Erro: {ex.Message}");
-            }
-        }
-
-        [HttpGet("tema/{tema}")]
-        public async Task<IActionResult> GetByTema(string tema)
-        {
-            try
-            {
-                var evento = await _service.GetAllEventosByTemaAsync(User.GetUserId(), tema, true);
                 if (evento == null) return NoContent();
                 return Ok(evento);
             }
