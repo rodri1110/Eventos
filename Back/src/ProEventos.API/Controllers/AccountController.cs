@@ -16,16 +16,20 @@ namespace ProEventos.API.Controllers
     {
         private readonly IAccountService _accountService;
         private readonly ITokenService _tokenService;
-        public AccountController(IAccountService accountService, 
+        private readonly IUtil _util;
+        private readonly string _destino = "Perfil";
+        public AccountController(IAccountService accountService,
+                            IUtil util,
                             ITokenService tokenService)
         {
+            _util = util;
             _accountService = accountService;
             _tokenService = tokenService;
         }
 
-        [AllowAnonymous]
         [HttpGet("GetUser")]
-        public async Task<IActionResult> GetUser(){
+        public async Task<IActionResult> GetUser()
+        {
             try
             {
                 var userName = User.GetUserName();
@@ -34,21 +38,22 @@ namespace ProEventos.API.Controllers
             }
             catch (Exception ex)
             {
-                 return this.StatusCode(StatusCodes.Status500InternalServerError,
-                 $"Erro ao verificar usuário. Erro: {ex.Message}");
-            } 
+                return this.StatusCode(StatusCodes.Status500InternalServerError,
+                $"Erro ao verificar usuário. Erro: {ex.Message}");
+            }
         }
 
         [AllowAnonymous]
         [HttpPost("Register")]
-        public async Task<IActionResult> RegisterUser(UserDTO userDTO){
+        public async Task<IActionResult> RegisterUser(UserDTO userDTO)
+        {
             try
             {
-                if(await _accountService.UserExists(userDTO.UserName))
-                return BadRequest("Nome de usuário já cadastrado");
+                if (await _accountService.UserExists(userDTO.UserName))
+                    return BadRequest("Nome de usuário já cadastrado");
 
                 var user = await _accountService.CreateAccountAsync(userDTO);
-                if(user != null) return Ok(new
+                if (user != null) return Ok(new
                 {
                     userName = user.UserName,
                     PrimeiroNome = user.PrimeiroNome,
@@ -59,22 +64,23 @@ namespace ProEventos.API.Controllers
             }
             catch (Exception ex)
             {
-                 return this.StatusCode(StatusCodes.Status500InternalServerError,
-                 $"Erro ao registrar usuário. Erro: {ex.Message}");
-            } 
+                return this.StatusCode(StatusCodes.Status500InternalServerError,
+                $"Erro ao registrar usuário. Erro: {ex.Message}");
+            }
         }
 
         [AllowAnonymous]
         [HttpPost("Login")]
-        public async Task<IActionResult> Login(UserLoginDTO userLogin){
+        public async Task<IActionResult> Login(UserLoginDTO userLogin)
+        {
             try
             {
                 var user = await _accountService.GetUserByUserNameAsync(userLogin.Username);
-                if(user == null) return Unauthorized("Usuário ou senha incorretos.");
-                
+                if (user == null) return Unauthorized("Usuário ou senha incorretos.");
+
                 var result = await _accountService.CheckUserPasswordAsync(user, userLogin.Password);
-                if(!result.Succeeded) return Unauthorized("Usuário ou senha incorretos.");
-                
+                if (!result.Succeeded) return Unauthorized("Usuário ou senha incorretos.");
+
                 return Ok(new
                 {
                     userName = user.UserName,
@@ -84,27 +90,28 @@ namespace ProEventos.API.Controllers
             }
             catch (Exception ex)
             {
-                 return this.StatusCode(StatusCodes.Status500InternalServerError,
-                 $"Erro ao realizar login. Erro: {ex.Message}");
-            } 
+                return this.StatusCode(StatusCodes.Status500InternalServerError,
+                $"Erro ao realizar login. Erro: {ex.Message}");
+            }
         }
-        
+
         [HttpPut("UpdateUser")]
-        public async Task<IActionResult> UpdateUser(UserUpdateDTO userUpdateDTO){
+        public async Task<IActionResult> UpdateUser(UserUpdateDTO userUpdateDTO)
+        {
             try
             {
-                if(userUpdateDTO.UserName != User.GetUserName()) 
-                return Unauthorized("Usuário inválido!");
+                if (userUpdateDTO.UserName != User.GetUserName())
+                    return Unauthorized("Usuário inválido!");
 
                 var user = await _accountService.GetUserByUserNameAsync(User.GetUserName());
-                if(user == null) return Unauthorized("Usuário inválido.");
+                if (user == null) return Unauthorized("Usuário inválido.");
 
                 var userReturn = await _accountService.UpdateAccount(userUpdateDTO);
-                if(userReturn == null) return  NoContent();
+                if (userReturn == null) return NoContent();
 
                 return Ok
                 (
-                    new 
+                    new
                     {
                         userName = userReturn.UserName,
                         PrimeiroNome = userReturn.PrimeiroNome,
@@ -114,9 +121,35 @@ namespace ProEventos.API.Controllers
             }
             catch (Exception ex)
             {
-                 return this.StatusCode(StatusCodes.Status500InternalServerError,
-                 $"Erro ao atualizar usuário. Erro: {ex.Message}");
-            } 
+                return this.StatusCode(StatusCodes.Status500InternalServerError,
+                $"Erro ao atualizar usuário. Erro: {ex.Message}");
+            }
+        }
+
+        [HttpPost("upload-image/{eventoId}")]
+        public async Task<IActionResult> UploadImage()
+        {
+            try
+            {
+                var user = await _accountService.GetUserByUserNameAsync(User.GetUserName());
+                if (user == null) return NoContent();
+
+                var file = Request.Form.Files[0];
+                if (file.Length > 0)
+                {
+                    _util.DeleteImage(user.ImageURL, _destino);
+                    user.ImageURL = await _util.SaveImage(file, _destino);
+                }
+
+                var userRetorno = await _accountService.UpdateAccount(user);
+
+                return Ok(userRetorno);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                $"Erro ao atualizar imagem. Erro: {ex.Message}");
+            }
         }
     }
 }

@@ -450,7 +450,9 @@ namespace ProEventos.Persistence.Migrations
                 {
                     b.HasOne("ProEventos.Domain.Identity.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+/*linhas acrescentadas*/.OnDelete(DeleteBehavior.Cascade)
+/*linhas acrescentadas*/.IsRequired();
 
                     b.Navigation("User");
                 });

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using ProEventos.Application.DTOs;
@@ -15,8 +14,8 @@ namespace ProEventos.Application.Service
     {
         private readonly IEventosRepository _eventosRepository;
         private readonly IProEventosRepository _proEventosRepository;
-
         private readonly IMapper _mapper;
+        
         public EventosService(IProEventosRepository proEventosRepository,
                               IEventosRepository eventosRepository, 
                               IMapper mapper)

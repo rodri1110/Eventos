@@ -7,14 +7,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using ProEventos.Persistence.Contexto;
-using ProEventos.Application;
 using ProEventos.Application.Interface;
 using ProEventos.Application.Service;
 using ProEventos.Persistence;
 using ProEventos.Persistence.Repository;
 using ProEventos.Persistence.Interface;
 using ProEventos.Persistence.Repository.Interface;
-using AutoMapper;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
 using Microsoft.AspNetCore.Http;
@@ -84,11 +82,16 @@ namespace ProEventos.API
             services.AddScoped<ILoteService, LoteService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IPalestrantesService, PalestrantesService>();
+            services.AddScoped<IRedesSociaisService, RedesSociaisService>();
+            services.AddScoped<IUtil, Util>();
 
+            services.AddScoped<IProEventosRepository, ProEventosRepository>();
             services.AddScoped<IEventosRepository, EventosRepository>();
             services.AddScoped<ILoteRepository, LoteRepository>();
-            services.AddScoped<IProEventosRepository, ProEventosRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IPalestrantesRepository, PalestrantesRepository>();
+            services.AddScoped<IRedeSocialRepository, RedeSocialRepository>();
 
             services.AddCors();
 

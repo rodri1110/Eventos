@@ -1,0 +1,12 @@
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+
+namespace ProEventos.API{
+    
+    public interface IUtil
+    {
+        Task<string> SaveImage(IFormFile formFile, string destino);
+
+        void DeleteImage(string imageName, string destino);
+    }
+}
